@@ -70,9 +70,15 @@ public class Program
             else failedCount++;
         }
 
+        // Процент успешности
+        double successRate = testCases.Count == 0
+            ? 0
+            : (double)passedCount / testCases.Count * 100;
+
         // Итоговая статистика
         Console.ForegroundColor = passedCount == testCases.Count ? ConsoleColor.Green : ConsoleColor.Yellow;
         Console.WriteLine($"Результат: {passedCount}/{testCases.Count} тестов пройдено");
+        Console.WriteLine($"Процент успешности: {successRate:F2}%");
         Console.ResetColor();
 
         if (failedCount > 0)
