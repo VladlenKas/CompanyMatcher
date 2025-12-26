@@ -3,9 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace CompanyMatcher;
+namespace CompanyMatcher.Main;
 
-// Модель для маппинга данных из json в виде списка тестов
+// Модель для маппинга данных из json
 internal class TestCase
 {
     [JsonProperty("str1")] public string Str1 { get; set; } = null!;
@@ -26,8 +26,8 @@ public class Program
                 return;
             }
 
-            // Создаем и запускам валидатор
-            var validator = new CompanyNameValidator();
+            // Запускам проверку тестов
+            var validator = new CompanyNameComparer();
             RunTests(validator, testCases);
 
             Console.WriteLine($"\nТесты завершены");
@@ -42,7 +42,7 @@ public class Program
         }
     }
 
-    private static void RunTests(CompanyNameValidator validator, List<TestCase> testCases)
+    private static void RunTests(CompanyNameComparer validator, List<TestCase> testCases)
     {
         int passedCount = 0;
         int failedCount = 0;
@@ -51,22 +51,39 @@ public class Program
         {
             var test = testCases[i];
             bool result = validator.AreSameCompany(test.Str1, test.Str2);
+            bool isPassed = test.Expected == result;
 
-            if (test.Expected != result)
-            {
-                Console.WriteLine($"TEST №{i} FAILED: {test.Str1} <-> {test.Str2}");
-                failedCount++;
-            }
-            else
-            {
-                passedCount++;
-            }
+            string status = isPassed ? "PASSED" : "FAILED";
+            ConsoleColor color = isPassed ? ConsoleColor.Green : ConsoleColor.Red;
+
+            Console.ForegroundColor = color;
+            Console.WriteLine($"TEST #{i + 1:00} [{status}]:");
+
+            Console.ForegroundColor = ConsoleColor.Gray;
+            Console.WriteLine($"> {test.Str1} <-> {test.Str2}");
+
+            Console.ForegroundColor = ConsoleColor.DarkGray;
+            Console.WriteLine($"> (Ожидается: {test.Expected} / Получено: {result})\n");
+            Console.ResetColor();
+
+            if (isPassed) passedCount++;
+            else failedCount++;
         }
 
-        Console.WriteLine($"\nПройдено: {passedCount}/{testCases.Count}");
-        Console.WriteLine($"Провалено: {failedCount}/{testCases.Count}");
+        // Итоговая статистика
+        Console.ForegroundColor = passedCount == testCases.Count ? ConsoleColor.Green : ConsoleColor.Yellow;
+        Console.WriteLine($"Результат: {passedCount}/{testCases.Count} тестов пройдено");
+        Console.ResetColor();
+
+        if (failedCount > 0)
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine($"Провалено: {failedCount} тестов");
+            Console.ResetColor();
+        }
     }
-    
+
+
     private static List<TestCase>? ReadJson(string jsonFilePath)
     {
         string jsonString = File.ReadAllText(jsonFilePath);

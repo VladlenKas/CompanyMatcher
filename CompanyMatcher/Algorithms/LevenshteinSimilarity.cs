@@ -2,12 +2,19 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace CompanyMatcher;
+namespace CompanyMatcher.Algorithms;
 
-internal class LevenshteinCalculate
+internal class LevenshteinSimilarity
 {
-    /// Вычисляет коэффициент похожести двух строк
-    public static double CalculateSimilarity(string str1, string str2)
+    // Возвращает результат проверки схожести слов между собой
+    public static bool Match(string str1, string str2)
+    {
+        double similarity = CalculateSimilarity(str1, str2);
+        return similarity >= 0.7; // Здесь задаем коэфицент схожести слов
+    }
+
+    // Вычисляет коэффициент похожести двух строк
+    private static double CalculateSimilarity(string str1, string str2)
     {
         int distance = LevenshteinDistance(str1, str2);
         int maxLength = Math.Max(str1.Length, str2.Length);
