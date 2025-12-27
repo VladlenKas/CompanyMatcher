@@ -15,11 +15,14 @@ internal class TestCase
 
 public class Program
 {
+    // Путь к файлу с тестовыми данными
+    private static readonly string _testCasesFilepath = @"test_cases.json";
+
     public static void Main(string[] args)
     {
         try
         {
-            var testCases = ReadJson(@"test_cases.json");
+            var testCases = ReadJson(_testCasesFilepath);
             if (testCases == null)
             {
                 Console.WriteLine("Ошибка: не удалось загрузить тестовые данные");
@@ -31,6 +34,7 @@ public class Program
             RunTests(validator, testCases);
 
             Console.WriteLine($"\nТесты завершены");
+            Console.ReadKey();
         }
         catch (FileNotFoundException)
         {
@@ -88,7 +92,6 @@ public class Program
             Console.ResetColor();
         }
     }
-
 
     private static List<TestCase>? ReadJson(string jsonFilePath)
     {
