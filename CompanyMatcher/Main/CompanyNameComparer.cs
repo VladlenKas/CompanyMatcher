@@ -1,10 +1,4 @@
 ﻿using CompanyMatcher.Algorithms;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
-using System.Text;
-using System.Text.RegularExpressions;
 
 namespace CompanyMatcher.Main;
 
@@ -21,23 +15,19 @@ internal class CompanyNameComparer
             return true;
 
         // Нормализация строк
-        string name1Norm = CompanyNameNormalizer.Normalize(name1);
-        string name2Norm = CompanyNameNormalizer.Normalize(name2);
+        CompanyNameNormalizer.Normalize(ref name1);
+        CompanyNameNormalizer.Normalize(ref name2);
 
         // Проверка на подстроки
-        if (name1Norm.Contains(name2Norm) || name2Norm.Contains(name1Norm))
+        if (name1.Contains(name2) || name2.Contains(name1))
             return true;
 
         // Проверка на числа (если есть, должны быть одинаковые)
-        if (NumbersMatcher.IsNumbersMismatch(name1Norm, name2Norm))
+        if (NumbersMatcher.IsNumbersMismatch(name1, name2))
             return false;
 
-        // Проверка после сортировки слов в строке
-        if (SortingMatcher.IsMatchAfterSort(name1Norm, name2Norm))
-            return true;
-
         // Проверка по расстоянию Левенштейна
-        if (LevenshteinSimilarity.Match(name1Norm, name2Norm))
+        if (LevenshteinSimilarity.Match(name1, name2))
             return true;
 
         return false;
